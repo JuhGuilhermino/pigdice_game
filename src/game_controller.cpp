@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include "player.cpp"
+#include "dice.cpp"
 using namespace std;
 
 class Game_Controller {

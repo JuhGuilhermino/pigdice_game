@@ -7,7 +7,7 @@
 #include <vector>
 using namespace std;
 
-struct history_pints{
+struct history{
     int num_rolls, points; 
 };
 
@@ -16,7 +16,7 @@ class Player {
     private:
         string player_name; //nome do jogador
         //lista com os num de vezes que rolou o dado e pontos feitos a cada turno {{num_rolls, points},...}
-        //total de pontos ao fim da partida
+        int score;
     
     //métodos
     public:
@@ -32,7 +32,7 @@ class Player {
         };
 
         //adiciona o numero de pontos da rodada no total de pontos do jogo
-        void game_score (){
+        void update_score (){
 
         };
 };
