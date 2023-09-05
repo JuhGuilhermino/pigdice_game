@@ -23,7 +23,7 @@ class Dice {
     public:
         //método que escolhe aleatóriamente jogador que vai começar o jogo;
         int choose_player() {
-
+            
             return;
         };
 

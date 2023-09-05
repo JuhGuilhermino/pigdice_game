@@ -12,6 +12,7 @@ using namespace std;
 
 class Game_Controller {
     private:
+        Player* current_player;
         //representam as ações do jogo
         enum game_actions {
             HOLD=0,
@@ -50,6 +51,21 @@ class Game_Controller {
             //sortear qual jogador vai começar primeiro
             //perguntar o nome do jogador
             //definit status do jogo
+
+            //usando a classe dice pra escolher o jogador inicial
+            Dice dice;
+            int starting_player = dice.choose_player();
+
+            //definir o jogador atual com base na escolha aleatória
+            current_player = (starting_player == HUMAN) ? &p_human : &p_machine;
+
+            //solicitar o nome do jogador humano
+            cout << "Informe seu nome: ";
+            p_human.get_name();
+
+            //definir o estado inicial do jogo
+            game_state = game_state_e::STARTING;
+
         };
 
         /// Renders the game to the user.
@@ -105,9 +121,35 @@ class Game_Controller {
                 // Do nothing, no interaction in these states.
             }
             else if ( game_state == game_state_e::WELCOME ){
+                //esperamos o usuário pressionar Enter pra começar o jogo
+                cout << "Press <Enter> to start the match." << endl;
+                cin.ignore(); //espera o usuario pressionar enter
+                game_state = game_state_e::PLAYING; //transiona pra o playing state
 
             }
             else if ( game_state == game_state_e::PLAYING ){
+                cout << ">>> The current player is: " << current_player->get_name() << endl;
+                cout << "Commands syntax:" << endl;
+                cout << " <Enter>      -> ROLL the dice." << endl;
+                cout << " 'r' + <Enter> -> ROLL the dice." << endl;
+                cout << " 'h' + <Enter> -> HOLD (add turn total and pass turn over)." << endl;
+                cout << " 'q' + <Enter> -> quit the match (no winner)." << endl;
+
+                cout << "Enter command > ";
+                string command;
+                cin >> command;
+
+                //process the user's command based on the input.
+                if (command == "r" || command == ""){
+                    //se o usuario quer rolar o dado
+                } else if (command == "h"){
+                    //usuario quer segurar
+                } else if (command == "q"){
+                    //usuario desiste
+                } else {
+                    //se colocar algum comando inválido
+                    cout << "Invalid command. Please try again." << endl;
+                }
 
             }
             else if ( game_state == game_state_e::UPDATING_SCORE ){
