@@ -23,8 +23,8 @@ class Dice {
 
     public:
         //método que escolhe aleatóriamente jogador que vai começar o jogo;
-        int choose_player() {
-            int player = experimental::randint(0,1);
+        int choose_player(int numbers_players) {
+            int player = experimental::randint(0,numbers_players);
             return players_e(player);
         };
 

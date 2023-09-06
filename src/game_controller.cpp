@@ -48,6 +48,7 @@ class Game_Controller {
         int game_state;
         int starting_player;
         int current_player;
+        int numbers_players;
 
 
     public:
@@ -58,12 +59,16 @@ class Game_Controller {
             //definit status do jogo
 
             //usando a classe dice pra escolher o jogador inicial
+            cout << "Informe o número de jogadores: ";
+            cin >> numbers_players;
             Dice dice;
-            starting_player = dice.choose_player();
+            starting_player = dice.choose_player(numbers_players);
 
-            //solicitar o nome do jogador humano
-            cout << "Informe seu nome: ";
-            p_human.get_name();
+            //solicitar o nome dos jogadores humano
+            for (int i = 0; i < numbers_players; i++) {
+                cout << "Informe seu nome: ";
+                p_human.get_name();
+            }
 
             //definir o estado inicial do jogo
             game_state = game_state_e::STARTING;
