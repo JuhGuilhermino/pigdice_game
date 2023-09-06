@@ -29,6 +29,7 @@ class Game_Controller {
             PLAYING,          //< Where the game action takes place.
             ROLLING,          //< We roll the dice to get a face number.
             HOLDING,          //< User asked to hold and pass turn to the next player.
+            JOKER,            //< 
             UPDATING_SCORE,   //< Update the score board and show command issued in the turn.
             QUITTING,         //< User might want to quit (before game finishes), need to confirm.
             ENDING,           //< Closing the game (final message).
@@ -42,7 +43,6 @@ class Game_Controller {
         Dice dice;
 
         //variaveis que controlam o estado do jogo
-        int jogador_rodada;
         bool asked_to_quite;
         bool end_game = false;
         int game_state;
@@ -74,15 +74,13 @@ class Game_Controller {
         void process_events(void){
             if ( game_state == game_state_e::STARTING or game_state == game_state_e::ROLLING or game_state == game_state_e::HOLDING ){
                 // Do nothing, no interaction in these states.
-            }
-            else if ( game_state == game_state_e::WELCOME ){
+            } else if ( game_state == game_state_e::WELCOME ){
                 //esperamos o usuário pressionar Enter pra começar o jogo
                 cout << "Press <Enter> to start the match." << endl;
                 cin.ignore(); //espera o usuario pressionar enter
                 game_state = game_state_e::PLAYING; //transiona pra o playing state
 
-            }
-            else if ( game_state == game_state_e::PLAYING ){
+            } else if ( game_state == game_state_e::PLAYING ){
                 cout << ">>> The current player is: " << p_human.get_name() << endl;
 
                 //aqui tem que colocar um if
@@ -110,11 +108,11 @@ class Game_Controller {
                     cout << "Invalid command. Please try again." << endl;
                 }
 
-            }
-            else if ( game_state == game_state_e::UPDATING_SCORE ){
+            } else if ( game_state == game_state_e::JOKER ){
+            
+            } else if ( game_state == game_state_e::UPDATING_SCORE ){
 
-            }
-            else if ( game_state == game_state_e::QUITTING ){
+            } else if ( game_state == game_state_e::QUITTING ){
 
             }
         };
@@ -136,7 +134,9 @@ class Game_Controller {
 
             } else if ( game_state == game_state_e::HOLDING ){
 
-            } else if ( game_state == game_state_e::UPDATING_SCORE ){
+            } else if ( game_state == game_state_e::JOKER ){
+            
+            }else if ( game_state == game_state_e::UPDATING_SCORE ){
 
             } else if ( game_state == game_state_e::QUITTING ){
 
@@ -158,7 +158,9 @@ class Game_Controller {
 
             } else if ( game_state == game_state_e::HOLDING ){
 
-            } else if ( game_state == game_state_e::UPDATING_SCORE ){
+            } else if ( game_state == game_state_e::JOKER ){
+            
+            }else if ( game_state == game_state_e::UPDATING_SCORE ){
 
             } else if ( game_state == game_state_e::ENDING ){
 

@@ -46,3 +46,8 @@ class Dice {
             return dice;
         }
 };
+
+int main(){
+    Dice d;
+    cout << d.roll_dice() << endl;
+}
