@@ -8,36 +8,31 @@
 using namespace std;
 
 struct history{
-    int num_rolls, points; 
+    int dice_rolls, points; 
 };
 
 class Player {
-    //atributos
     private:
-        string player_name; //nome do jogador
-        int turn_score; //pontuação da rodada atual
-        //lista com os num de vezes que rolou o dado e pontos feitos a cada turno {{num_rolls, points},...}
-        int score;
+        string player_name = "Machine"; //nome do jogador
+        int turn_score = 0; //pontuação da rodada atual
+        int score = 0;
+        vector <history> tunrs_history;
     
-    //métodos
     public:
-        //pega o nome do usário
-        Player(){
-            score = 0;
-        }
+        //obtém o nome do jogador
         void set_name(){
-            cout << "informe o nome do jogador:  ";
+            cout << "Informe o nome do jogador:  ";
             cin >> player_name;
         }
 
-        //obtém o nome do jogador
+        //informa o nome do jogador
         string get_name() const{
             return player_name;
         }
 
         //adiciona o total de rolls e pontos obitidos na rodada
         void set_turn_score(int points){
-            turn_score = points;
+            turn_score += points;
         };
 
         //obtém a pontuação da rodada atual
