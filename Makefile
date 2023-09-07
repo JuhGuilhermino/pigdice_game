@@ -18,12 +18,16 @@ SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
 # Lista de arquivos de objeto gerados
 OBJECTS = $(SOURCES:.cpp=.o)
 
+# Nome dos arquivos de cabeçalho
+HEADERS = $(wildcard $(SRC_DIR)/*.h)
+
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXECUTABLE)
 
-%.o: %.cpp
+# Compilação dos arquivos de origem em objetos
+%.o: %.cpp $(HEADERS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:

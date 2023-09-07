@@ -12,6 +12,9 @@ using namespace std;
 
 class Game_Controller {
     private:
+        vector<Player> players; //vetor pra armazenar todos os jogadores
+        int current_player_index; // indice do jogador atual
+
         //representam as ações do jogo
         enum game_actions {
             HOLD=0,
@@ -58,7 +61,7 @@ class Game_Controller {
             //perguntar o nome do jogador
             //definit status do jogo
 
-            //usando a classe dice pra escolher o jogador inicial
+            //solicitar o número de jogadores
             cout << "Informe o número de jogadores: ";
             cin >> numbers_players;
             Dice dice;
@@ -66,9 +69,13 @@ class Game_Controller {
 
             //solicitar o nome dos jogadores humano
             for (int i = 0; i < numbers_players; i++) {
-                cout << "Informe seu nome: ";
-                p_human.get_name();
+                Player new_player;
+                new_player.set_name();
+                players.push_back(new_player);
             }
+
+            //definir o jogador inicial com base na escolha aleatória
+            current_player_index = dice.choose_player(players.size());
 
             //definir o estado inicial do jogo
             game_state = game_state_e::STARTING;
@@ -86,7 +93,8 @@ class Game_Controller {
                 game_state = game_state_e::PLAYING; //transiona pra o playing state
 
             } else if ( game_state == game_state_e::PLAYING ){
-                cout << ">>> The current player is: " << p_human.get_name() << endl;
+                Player& current_player = players[current_player_index];
+                cout << ">>> The current player is: " << current_player.get_name() << endl;
 
                 //aqui tem que colocar um if
                 //se for a maquina tem que chamar a funçãod e escolha da operação

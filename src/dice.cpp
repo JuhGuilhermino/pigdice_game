@@ -1,13 +1,7 @@
-/** OQUE FAZER AQUI?
- * escolhe aleatóriamente jogador que vai começar o jogo;
- * //resgistra quem está na jogada
- * sorteia o numero do dado
-*/
-
 #include <iostream>
 #include <string>
 #include <vector>
-#include <experimental/random>
+#include <random>
 using namespace std;
 
 enum players_e {
@@ -16,38 +10,31 @@ enum players_e {
 };
 
 class Dice {
-    private:
-        int next_player;
-        int dice; //num sorteado no dado
-        int dice_faces[6] = {1, 2, 3, 4, 5, 6};
+private:
+    int next_player;
+    int dice;       
+    int dice_faces[6] = {1, 2, 3, 4, 5, 6};
 
-    public:
-        //método que escolhe aleatóriamente jogador que vai começar o jogo;
-        int choose_player(int numbers_players) {
-            int player = experimental::randint(0,numbers_players);
-            return players_e(player);
-        };
+public:
+    Dice() : next_player(0), dice(0) {} 
 
-        //resgistra quem está na jogada
-        int update_player(int current_player) {
-            if (current_player == 1){
-                next_player = players_e(current_player-1);
-            } 
-            if (current_player == 0){
-                next_player = players_e(current_player+1);
-            }
-            
-            return next_player;
+    int choose_player(int numbers_players) {
+        int player = rand() % numbers_players;
+        return players_e(player);
+    }
+
+    int update_player(int current_player) {
+        if (current_player == 1) {
+            next_player = players_e(current_player - 1);
         }
-
-        //rolar o dado
-        int roll_dice(){
-            int dice = experimental::randint(1,6);
-            return dice;
+        if (current_player == 0) {
+            next_player = players_e(current_player + 1);
         }
+        return next_player;
+    }
+
+    int roll_dice() {
+        dice = rand() % 6 + 1;
+        return dice;
+    }
 };
-
-int main(){
-    Dice d;
-    cout << d.roll_dice() << endl;
-}
