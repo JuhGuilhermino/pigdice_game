@@ -14,7 +14,7 @@ class Game_Controller {
     private:
         //para controlar a progressão do jogo e das ações
         enum game_state_e {
-            STARTING=0,       //< Beginning the game.
+            STARTING,         //< Beginning the game.
             WELCOME,          //< Opening messasges.
             PLAYING,          //< Where the game action takes place.
             ROLLING,          //< We roll the dice to get a face number.
@@ -35,11 +35,11 @@ class Game_Controller {
         /// String representation for the dice's faces (Unicode).
         string dice_faces[6] = { "\u2680", "\u2681", "\u2682", "\u2683", "\u2684", "\u2685" };
 
-        bool end_game = false; 
+        bool end_game; 
         int game_state;           // controle das ações dos jogadores
-        int game_action;         // controle dos estados
+        int game_action;          // controle dos estados
         int number_of_players;    // número de jogadores
-        vector  <Player> players; // vetor com todos os objetos jogadores
+        vector <Player> players;  // vetor com todos os objetos jogadores
         int current_player_index; // indice do jogador atual
         int starting_player_index;// indice do jogador que inicia os turnos
         Dice dice;                // cria uma instacia da classe Dice
@@ -82,7 +82,7 @@ class Game_Controller {
 
         /// Process user input events, depending on the current game state.
         void process_events(void){
-            if ( game_state == game_state_e::STARTING or game_state == game_state_e::ROLLING or game_state == game_state_e::HOLDING ){
+            if ( game_state == game_state_e::STARTING || game_state == game_state_e::ROLLING || game_state == game_state_e::HOLDING ){
                 // Do nothing, no interaction in these states.
             } else if ( game_state == game_state_e::WELCOME ){
                 //Dar inicio ao jogo
@@ -263,5 +263,4 @@ class Game_Controller {
             end_game = true;
             return end_game;
         }; 
-
 };
