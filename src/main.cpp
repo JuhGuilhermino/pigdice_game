@@ -17,7 +17,7 @@ int main(void){
     // Set up simulation.
     game.initialize();
     // The Game Loop (Architecture)
-    while(not game.game_over()){
+    while(game.game_over() == false){
         game.process_events();
         game.update();
         game.render();

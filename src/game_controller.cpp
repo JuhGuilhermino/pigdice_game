@@ -55,13 +55,13 @@ class Game_Controller {
             players.push_back(machine); //1º indice do vetor sempre é a máquina
 
             //solicitar o número de jogadores
-            cout << "Informs the number of human players between 1 and 4: ";
+            cout << "Informs the number of human players between 1 and 4:  ";
             cin >> number_of_players;
 
             //verifica se o jogo suporta o numero de jogadores informados
             while (number_of_players > 4){
                     cout << "Invalid number. Please try again." << endl;
-                    cout << "Informs the number of human players between 1 and 4: " << endl;
+                    cout << "Informs the number of human players between 1 and 4:  ";
                     cin >> number_of_players;
             }
 
@@ -156,6 +156,7 @@ class Game_Controller {
         void update(void){
             if (game_state == game_state_e::STARTING ){
                 game_state = game_state_e::WELCOME; //Go to WELCOME state
+
             } else if ( game_state == game_state_e::WELCOME ){
                 number_of_turns = 1; // Starts the counting of turns
                 current_player_index = starting_player_index; // Update the current player
@@ -167,18 +168,49 @@ class Game_Controller {
                 if (game_action == game_actions_e::QUIT) { game_state == game_state_e::QUITTING;}
                 if (game_action == game_actions_e::ROOL) { game_state == game_state_e::ROLLING;}
                 
-
             } else if ( game_state == game_state_e::ROLLING ){
+                int point = dice.roll_dice(); 
 
-            } else if ( game_state == game_state_e::HOLDING ){
+                //update score of the player in current turn
+                players[current_player_index].set_turn_score(point);
 
-            } else if ( game_state == game_state_e::JOKER ){
+                //update geral score player of the player in game
+                players[current_player_index].update_score();
+
+                //check if the player won the game
+                if (players[current_player_index].get_score() >= 100) {
+                    game_over(); //finish the game
+                    game_state == game_state_e::ENDING; //Go to END state
+                } else if (point == 1) {
+                    game_action = game_actions_e::HOLD; //end ther turn fot current player
+                    game_state == game_state_e::UPDATING_SCORE
+                    ; //Go to UPDATE state
+                }else {
+                    // has no winner
+                    game_state == game_state_e::UPDATING_SCORE
+                    ; //Go to UPDATE state
+                }
         
-            }else if ( game_state == game_state_e::UPDATING_SCORE ){
+            } else if ( game_state == game_state_e::HOLDING ){
+                game_state == game_state_e::UPDATING_SCORE; //Go to UPDATE state
+        
+            } else if ( game_state == game_state_e::UPDATING_SCORE ){
+                if (game_action == game_actions_e::HOLD) {
+                    //upgrade to next player
+                    current_player_index ++; 
+                    if (current_player_index > number_of_players-1){
+                        current_player_index = 0; //the next player is the machine
+                    }
+                    //upgrade to next turn
+                    if (current_player_index == starting_player_index) {
+                        number_of_turns ++;
+                    }
+                }
+                game_state == game_state_e::PLAYING; //Go to PLAY state 
 
             } else if ( game_state == game_state_e::QUITTING ){
                 if (ask_quit_game ==  true) {
-                    game_over(); //finish the loop
+                    game_over(); //finish the game
                     game_state == game_state_e::ENDING; //Go to END state
                 }
                 if (ask_quit_game ==  false) {
@@ -209,12 +241,18 @@ class Game_Controller {
             } else if ( game_state == game_state_e::HOLDING ){
                 cout << ">>> Requested action: 'HOLD" << endl;
                 
-            } else if ( game_state == game_state_e::JOKER ){
-            
-            }else if ( game_state == game_state_e::UPDATING_SCORE ){
+            } else if ( game_state == game_state_e::UPDATING_SCORE ){
+                cout << "PLACAR" << endl;
 
             } else if ( game_state == game_state_e::ENDING ){
-
+                if (game_action == game_actions_e::ROOL) {
+                    cout << ">> Contratulations! The winner is " << players[current_player_index].get_name() << "!" << endl;
+                }
+                if (game_action == game_actions_e::QUIT) {
+                    cout << ">> Goodbye..." << endl;
+                }
+                cout << "GAME HISTORY" << endl;
+            
             } else if ( game_state == game_state_e::QUITTING ){
                 cout << ">>> Requested action: 'QUIT" << endl;
             }
