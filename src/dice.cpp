@@ -26,7 +26,7 @@ public:
     //Draw IA actions: ROOL or HOLD
     // 0 =  HOLD
     // 1 = ROOL
-    char draw_ia_actions(){
+    int draw_ia_actions(){
         ia_action = rand() % 1;
         return ia_action;
     }

@@ -37,12 +37,14 @@ class Game_Controller {
 
         bool end_game = false; 
         int game_state;           // controle das ações dos jogadores
-        int game_actions;         // controle dos estados
+        int game_action;         // controle dos estados
         int number_of_players;    // número de jogadores
         vector  <Player> players; // vetor com todos os objetos jogadores
         int current_player_index; // indice do jogador atual
+        int starting_player_index;// indice do jogador que inicia os turnos
         Dice dice;                // cria uma instacia da classe Dice
         int number_of_turns;      // marca o número do turno
+        bool ask_quit_game;
         
 
     public:
@@ -71,7 +73,7 @@ class Game_Controller {
             }            
 
             //define o jogador inicial aleatóriamente
-            current_player_index = dice.choose_player(players.size());
+            starting_player_index = dice.choose_player(players.size());
 
             //atualiza o estado para iniciar o jogo
             game_state = game_state_e::STARTING;
@@ -88,14 +90,35 @@ class Game_Controller {
                 cin.ignore(); //espera o usuario pressionar enter
 
             } else if ( game_state == game_state_e::PLAYING ){
-                cout << "Commands syntax:" << endl;
-                cout << " 'r' + <Enter> -> ROLL the dice." << endl;
-                cout << " 'h' + <Enter> -> HOLD (add turn total and pass turn over)." << endl;
-                cout << " 'q' + <Enter> -> quit the match (no winner)." << endl;
-                cout << "Enter command >> ";
-                cout << "Invalid command. Please try again." << endl;
-                cout << "Enter command >> ";
                 
+                if (current_player_index == 0) {
+                    //current player is the machine 
+                    //draw the action
+                    game_action = game_actions_e(dice.draw_ia_actions()); 
+
+                } else {
+                    char answer;
+
+                    //current player is a human
+                    cout << "Commands syntax:" << endl;
+                    cout << " 'h' + <Enter> -> HOLD (add turn total and pass turn over)." << endl;
+                    cout << " 'r' + <Enter> -> ROLL the dice." << endl;
+                    cout << " 'q' + <Enter> -> quit the match (no winner)." << endl;
+                    cout << "Enter command >> ";
+                    cin >> answer;
+
+                    //check input
+                    while (answer != 'r' && answer != 'h' && answer != 'q'){
+                        cout << "Invalid command. Please try again." << endl;
+                        cout << "Enter command >> ";
+                        cin >> answer;
+                    }
+
+                    //defines the action of the current player
+                    if (answer == 'r') { game_action = game_actions_e::ROOL;}
+                    if (answer == 'h') { game_action = game_actions_e::HOLD;}
+                    if (answer == 'q') { game_action = game_actions_e::QUIT;}
+                }
             } else if ( game_state == game_state_e::UPDATING_SCORE){
 
             } else if ( game_state == game_state_e::JOKER ){
@@ -108,25 +131,41 @@ class Game_Controller {
                 cout << "Enter your choice >> ";
 
             } else if ( game_state == game_state_e::QUITTING ){
+                char answer;
+
                 cout << "Are you sure you want to exit the game?" << endl;
                 cout << " 'y' + <Enter> -> YES" << endl;
                 cout << " 'n' + <Enter> -> NO" << endl;
                 cout << "Enter your choice >> ";
-                cout << "Invalid command. Please try again." << endl;
-                cout << "Enter your choice >> ";
+                cin >> answer;
+
+                //check input
+                while (answer != 'y' && answer != 'n'){
+                    cout << "Invalid command. Please try again." << endl;
+                    cout << "Enter your choice >> ";
+                    cin >> answer;
+                }
+
+                //defines the action
+                if (answer == 'y') { ask_quit_game == true; }
+                if (answer == 'n') { ask_quit_game == false; }
             }
         };
 
         /// Update the game based on the current game state.
         void update(void){
             if (game_state == game_state_e::STARTING ){
-                //Go to WELCOME state
-                game_state = game_state_e::WELCOME;
+                game_state = game_state_e::WELCOME; //Go to WELCOME state
             } else if ( game_state == game_state_e::WELCOME ){
-                // Go to PLAY state.
-                game_state = game_state_e::PLAYING;
+                number_of_turns = 1; // Starts the counting of turns
+                current_player_index = starting_player_index; // Update the current player
+                game_state = game_state_e::PLAYING; // Go to PLAY state.
+
             } else if ( game_state == game_state_e::PLAYING ){
                 //process the user's command based on the input.
+                if (game_action == game_actions_e::HOLD) { game_state == game_state_e::HOLDING;}
+                if (game_action == game_actions_e::QUIT) { game_state == game_state_e::QUITTING;}
+                if (game_action == game_actions_e::ROOL) { game_state == game_state_e::ROLLING;}
                 
 
             } else if ( game_state == game_state_e::ROLLING ){
@@ -138,7 +177,13 @@ class Game_Controller {
             }else if ( game_state == game_state_e::UPDATING_SCORE ){
 
             } else if ( game_state == game_state_e::QUITTING ){
-                
+                if (ask_quit_game ==  true) {
+                    game_over(); //finish the loop
+                    game_state == game_state_e::ENDING; //Go to END state
+                }
+                if (ask_quit_game ==  false) {
+                    game_state == game_state_e::PLAYING; //Go to PLAY state
+                }   
             } else {
                 // Do nothing in these states.
                 //  + ENDING
@@ -151,12 +196,18 @@ class Game_Controller {
                 // Do nothing in this state.
             } else if ( game_state == game_state_e::WELCOME){
                 // Welcome msg and rules.
+                cout << "WELCOME" << endl;
+
             } else if ( game_state == game_state_e::PLAYING ){
                 //Exibe de quem é a vez
+                cout << ">>> " << number_of_turns << "º TURN" << endl;
+                cout << ">>> The current player is:" << players[current_player_index].get_name() << endl;
                 
             } else if ( game_state == game_state_e::ROLLING){
+                cout << ">>> Requested action: 'ROOL" << endl;
                 
             } else if ( game_state == game_state_e::HOLDING ){
+                cout << ">>> Requested action: 'HOLD" << endl;
                 
             } else if ( game_state == game_state_e::JOKER ){
             
@@ -165,7 +216,7 @@ class Game_Controller {
             } else if ( game_state == game_state_e::ENDING ){
 
             } else if ( game_state == game_state_e::QUITTING ){
-
+                cout << ">>> Requested action: 'QUIT" << endl;
             }
         };
 
