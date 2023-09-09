@@ -1,7 +1,16 @@
 /**
- * Controle do jogo
+ * @file main.cpp
+ *
+ * @description
+ * This program implements an interactive Pig Dicegame.
+ *
+ * @author	Júlia Maria A Guilhermino, <juh.guilhermino03@gmail.com>
+ * @author  Ludmilla Rodrigues, <ludmillarodr178@gmail.com>
+ * @date	September 2023
+ * ====================================================================
  * 
-*/
+ * This file contains all the operation of the game, and the flow of actions.
+ */
 
 #include <iostream>
 #include <string>
@@ -12,7 +21,7 @@ using namespace std;
 
 class Game_Controller {
     private:
-        //para controlar a progressão do jogo e das ações
+        // states that represent the progress of the game
         enum game_state_e {
             STARTING=0,        //< Beginning the game.
             WELCOME,          //< Opening messasges.
@@ -24,36 +33,38 @@ class Game_Controller {
             ENDING,           //< Closing the game (final message).
         };
 
-        //representam as ações do jogo
+        // states that represent the actions of the game
         enum game_actions_e {
             HOLD=0, //< Stop the turn
             ROOL, //< Rool the dice
             QUIT //< Quit the game
         };
 
-        /// String representation for the dice's faces (Unicode).
+        /// string representation for the dice's faces (Unicode).
         string dice_faces[6] = { "\u2680", "\u2681", "\u2682", "\u2683", "\u2684", "\u2685" };
 
-        bool end_game=false;      // controle do loop do jogo
-        int game_state;           // controle dos estados
-        char game_action;         // controla as ações do jogadores
-        int number_of_players;    // número de jogadores
-        vector <Player> players;  // vetor com todos os objetos jogadores
-        int current_player_index; // indice do jogador atual
-        int starting_player_index;// indice do jogador que inicia os turnos
-        Dice dice;                // cria uma instacia da classe Dice
-        int number_of_turns;      // marca o número do turno
-        bool ask_quit_game;       // confirma se a pessoa quer sair do jogo ou não
-        int point;                //número que saiu no dado na jogada atual
-        int num_ia_actions = 0;   // controle das ações da IA
+        //
+        bool end_game=false;      // control of the game loop
+        int game_state;           // control of the game states
+        char game_action;         // control of current player action
+        int number_of_players;    // number of human players
+        vector <Player> players;  // stores all players
+        int current_player_index; // index the current player
+        int starting_player_index;// index the the first player of the turn
+        int number_of_turns;      // count the current turn
+        bool ask_quit_game;       // control of the player wants to quit of the game
+        int point;                // number the current player's dice
+        int num_ia_actions = 0;   // control of the machine actions
         
+        Dice dice;                // create an object of the Dice class
 
     public:
+        // returns the loop control
         bool get_end_game(){
             return end_game;
         };
 
-        // Returns true when the user wants to quit the game.
+        // changes the state to returns true when the user wants to quit the game or the game ends
         void game_over(){
             end_game = true;
             return;
@@ -61,32 +72,38 @@ class Game_Controller {
 
         //=== Common methods for the Game Loop design pattern.
         void initialize(void){
-            //cria uma instancia da classe Player que represneta a IA
+            //creates a Player object representing the machine/IA
             Player machine;
-            players.push_back(machine); //1º indice do vetor sempre é a máquina
 
-            //solicitar o número de jogadores
+            //first vector index is always the machine  
+            players.push_back(machine); 
+
+            //asks the number of human players
             cout << "Informs the number of human players between 1 and 4:  ";
             cin >> number_of_players;
 
-            //verifica se o jogo suporta o numero de jogadores informados
+            //check input
             while (number_of_players > 4){
                 cout << "Invalid number. Please try again." << endl;
                 cout << "Informs the number of human players between 1 and 4:  ";
                 cin >> number_of_players;
             }
 
-            //cria uma instacia de Player para cada jogador e solicitar o nome dos jogadores humanos
+            //creates a Player object for each human player
             for (int i = 0; i < number_of_players; i++) {
                 Player new_player;
+
+                //asks the player's name 
                 new_player.set_name();
+
+                //add him to players vector
                 players.push_back(new_player);
             }            
 
-            //define o jogador inicial aleatóriamente
+            //draw the first player
             starting_player_index = dice.choose_player(players.size());
 
-            //atualiza o estado para iniciar o jogo
+            //Go to START state
             game_state = game_state_e::STARTING;
         };
 
@@ -94,35 +111,39 @@ class Game_Controller {
         /// Process user input events, depending on the current game state.
         void process_events(void){
             if ( game_state == game_state_e::STARTING || game_state == game_state_e::ROLLING || game_state == game_state_e::HOLDING ){
-                // Do nothing, no interaction in these states.
+                // do nothing, no interaction in these states.
+
             } else if ( game_state == game_state_e::WELCOME ){
-                char answer;
-                //Dar inicio ao jogo
+                //confirms the start of the turn
                 cout << "Press 's' +  <Enter> to start the match." << endl;
+                char answer;
                 cin >> answer;
+
+                //check input
                 while (answer != 's') {
                     cout << "Press 's' +  <Enter> to start the match." << endl;
                     cin >> answer;
                 }
                 cout << "========================================================================================" << endl;
+
             } else if ( game_state == game_state_e::PLAYING ){
                 if (current_player_index == 0) {
+                    //current player is the Machine/IA
                     num_ia_actions ++;
                     if (num_ia_actions <= 3) {
                         game_action = game_actions_e::ROOL;
                     } else {
-                        //current player is the machine
                         game_action = game_actions_e(dice.draw_ia_actions()); 
                     }
-                } else if (current_player_index != 0) {
-                    char answer;
 
+                } else if (current_player_index != 0) {
                     //current player is a human
                     cout << "Commands syntax:" << endl;
                     cout << " 'h' + <Enter> -> HOLD (add turn total and pass turn over)." << endl;
                     cout << " 'r' + <Enter> -> ROLL the dice." << endl;
-                    cout << " 'q' + <Enter> -> quit the match (no winner)." << endl;
+                    cout << " 'q' + <Enter> -> QUIT the match (no winner)." << endl;
                     cout << "Enter command >> ";
+                    char answer;
                     cin >> answer;
 
                     //check input
@@ -136,23 +157,19 @@ class Game_Controller {
                     if (answer == 'h') { game_action = game_actions_e::HOLD; }
                     if (answer == 'r') { game_action = game_actions_e::ROOL; }
                     if (answer == 'q') { game_action = game_actions_e::QUIT; } 
-
                     cout <<endl;
                 }
 
             } else if ( game_state == game_state_e::UPDATING_SCORE){
+                // do nothing in this state
 
             } else if ( game_state == game_state_e::QUITTING ){
-                char answer;
-
-                if (number_of_players == 1) {
-                    cout << "Are you sure you want to exit the game?" << endl;
-                } else {
-                    cout << "Are you want to close the game?" << endl;
-                }
+                //confirm if the player wants to finish the game
+                cout << "Are you sure you want to exit the game?" << endl;
                 cout << " 'y' + <Enter> -> YES" << endl;
                 cout << " 'n' + <Enter> -> NO" << endl;
                 cout << "Enter your choice >> ";
+                char answer;
                 cin >> answer;
 
                 //check input
@@ -171,12 +188,18 @@ class Game_Controller {
         /// Update the game based on the current game state.
         void update(void){
             if (game_state == game_state_e::STARTING ){
-                game_state = game_state_e::WELCOME; //Go to WELCOME state
+                // go to WELCOME state
+                game_state = game_state_e::WELCOME; 
 
             } else if ( game_state == game_state_e::WELCOME ){
-                number_of_turns = 1; // Starts the counting of turns
-                current_player_index = starting_player_index; // Update the current player
-                game_state = game_state_e::PLAYING; // Go to PLAY state.
+                // starts the counting of turns
+                number_of_turns = 1; 
+
+                // update the current player
+                current_player_index = starting_player_index; 
+
+                // Go to PLAY state.
+                game_state = game_state_e::PLAYING; 
 
             } else if ( game_state == game_state_e::PLAYING ){
                 //process the user's command based on the input.
@@ -185,29 +208,51 @@ class Game_Controller {
                 if (game_action == game_actions_e::QUIT) { game_state = game_state_e::QUITTING; }
 
             } else if ( game_state == game_state_e::ROLLING ){
+                //draw the number of the dice
                 point = dice.roll_dice(); 
+
                 if (point == 1) {
-                    players[current_player_index].set_turn_score(0);//lose points of the turn
-                    players[current_player_index].set_geral_score(0); //update score
+                    //lose points of the turn
+                    players[current_player_index].set_turn_score(0);
+
+                    //update score
+                    players[current_player_index].set_geral_score(0); 
+
+                    //update history of the game
                     players[current_player_index].update_history();
-                    game_action = game_actions_e::HOLD; //end ther turn fot current player
-                    game_state = game_state_e::UPDATING_SCORE; //Go to UPDATE state
+
+                    //end ther turn fot current player
+                    game_action = game_actions_e::HOLD;
+
+                    //Go to UPDATE state
+                    game_state = game_state_e::UPDATING_SCORE; 
+
+
                 } else {
-                    players[current_player_index].set_turn_score(point); //update score of the player in current turn
+                    //update score of the player in current turn
+                    players[current_player_index].set_turn_score(point); 
+
                     //check if the player won the game
                     if (players[current_player_index].get_geral_score() + players[current_player_index].get_turn_score() >= 100) {
-                        players[current_player_index].set_geral_score(players[current_player_index].get_turn_score()); //update geral socore
-                        game_over(); //finish the game
-                        game_state = game_state_e::ENDING; //Go to END state
+                        //update geral score
+                        players[current_player_index].set_geral_score(players[current_player_index].get_turn_score());
+
+                        //finish the game
+                        game_over(); 
+                        game_state = game_state_e::ENDING; 
                     }else {
                         // has no winner
-                        game_state = game_state_e::UPDATING_SCORE; //Go to UPDATE state
+                        // Go to UPDATE state
+                        game_state = game_state_e::UPDATING_SCORE; 
                     }
                 }
                 
             } else if ( game_state == game_state_e::HOLDING ){
-                players[current_player_index].set_geral_score(players[current_player_index].get_turn_score()); //update score
-                game_state = game_state_e::UPDATING_SCORE; //Go to UPDATE state
+                 //update score
+                players[current_player_index].set_geral_score(players[current_player_index].get_turn_score());
+
+                //Go to UPDATE state
+                game_state = game_state_e::UPDATING_SCORE; 
         
             } else if ( game_state == game_state_e::UPDATING_SCORE ){
                 if (game_action == game_actions_e::HOLD) {
@@ -217,25 +262,31 @@ class Game_Controller {
                     //upgrade to next player
                     current_player_index ++; 
                     if (current_player_index > number_of_players){
-                        current_player_index = 0; //the next player is the machine
-                        num_ia_actions = 0; //restaura o modo de agir da máquina
+                        //the next player is the machine
+                        current_player_index = 0;    
+                        num_ia_actions = 0; 
                     }
+
                     //upgrade to next turn
                     if (current_player_index == starting_player_index) {
                         number_of_turns ++;
                     }
                 }
-                game_state = game_state_e::PLAYING; //Go to PLAY state  
+
+                //Go to PLAY state
+                game_state = game_state_e::PLAYING;
+
             } else if ( game_state == game_state_e::QUITTING ){
                 if (ask_quit_game ==  true) {
-                    game_state = game_state_e::ENDING; //Go to END state
-                }
-                if (ask_quit_game ==  false) {
-                    game_state = game_state_e::PLAYING; //Go to PLAY state
+                    //Go to END state
+                    game_state = game_state_e::ENDING; 
+
+                } else if (ask_quit_game ==  false) {
+                    //Go to PLAY state
+                    game_state = game_state_e::PLAYING; 
                 }
             } else {
-                // Do nothing in these states.
-                //  + ENDING
+                //finish the game
                 game_over();
                 game_state = 100;
             }
@@ -259,6 +310,8 @@ class Game_Controller {
                 cout << "• If the player holds, the turn total, the sum of the rolls during the turn, is added to" << endl;
                 cout << "  the player's score, and it becomes the opponent's turn." << endl <<endl;
                 cout << ">>> The players of the game are: ";
+
+                //displays the name of the players
                 for (int i = 0; i <= number_of_players; i++) {
                     cout << players[i].get_name();
                     if (i == number_of_players){
@@ -267,10 +320,12 @@ class Game_Controller {
                         cout << ", ";
                     }
                 }
+
+                //displays the fist player to play
                 cout << ">>> The player who will start the game is:  " << players[starting_player_index].get_name() << endl << endl;           
     
             } else if ( game_state == game_state_e::PLAYING ){
-                //Exibe de quem é a vez
+                //displays the current player
                 cout << ">>> " << number_of_turns << "º TURN: the current player is:  " << players[current_player_index].get_name() << endl <<endl;
                 
             } else if ( game_state == game_state_e::ROLLING){
@@ -280,6 +335,8 @@ class Game_Controller {
                 cout << ">>> Requested action: 'HOLD'" << endl;
                 
             } else if ( game_state == game_state_e::UPDATING_SCORE ){
+                // the player choose to end his turn
+                // displays the game score 
                 if (game_action == game_actions_e::HOLD && point != 1){
                     cout << endl << "|    GERAL SCORE" << endl;
                     for (int i = 0; i <= number_of_players; i++) {
@@ -288,6 +345,8 @@ class Game_Controller {
                     cout << "-------------------------------------------------------" << endl << endl;
                 }
                 
+                // the player lost his turn
+                // displays a special message and the game score 
                 if (game_action == game_actions_e::HOLD && point == 1) {
                     cout << "    Dice value is " << dice_faces[point-1] <<" (" << point <<")" << endl;
                     cout << "    Oh no! You lost your points this turn!" << endl;
@@ -298,6 +357,8 @@ class Game_Controller {
                     cout << "-------------------------------------------------------" << endl << endl;
                 }
                 
+                // the player continues on the turn
+                // displays the player’s partial points
                 if (game_action == game_actions_e::ROOL && point !=1) {
                     cout << "    Dice value is " << dice_faces[point-1] <<" (" << point <<")" << endl;
                     cout << "    The turn total is: " << players[current_player_index].get_geral_score() + players[current_player_index].get_turn_score() << endl;
@@ -305,15 +366,19 @@ class Game_Controller {
                 }
 
             } else if ( game_state == game_state_e::ENDING ){
+                // the current player won the game
                 if (game_action == game_actions_e::ROOL) {
                     cout << "-------------------------------------------------------" << endl << endl;
                     cout << endl << ">> Congratulations! The winner is " << players[current_player_index].get_name() << " with " << players[current_player_index].get_geral_score() << " !" << endl << endl;
                 }
+
+                // the current player closed the
                 if (game_action == game_actions_e::QUIT) {
                     cout << "-------------------------------------------------------" << endl << endl;
                     cout << endl << ">> Goodbye..." << endl << endl;
                 }
 
+                //displays history of the game
                 cout << "            >> HISTORY OF THE GAME ACTIONS<<           " << endl;
                 for (int i = 0; i <= number_of_players; i++) {
                     cout << ">>> " <<  players[i].get_name() << endl;
