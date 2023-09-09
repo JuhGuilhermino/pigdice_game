@@ -2,9 +2,7 @@
 
 Esse projeto é uma versão do jogo Pig Dice para um trabalho da disciplina "Programação I", do curso de Bacharelado em Ciência da Computação da Universidade Federal do Rio Grande do Norte (UFRN). 
 
-**Autoras**
-* [Júlia Maria A. Guilhermino](https://github.com/JuhGuilhermino), <juh.guilhermino03@gmail.com>
-* [Ludmilla Rodrigues](https://github.com/Ludrodrigues), <ludmillarodr178@gmail.com>
+**Autoras:** [Júlia Maria A. Guilhermino](https://github.com/JuhGuilhermino) e [Ludmilla Rodrigues](https://github.com/Ludrodrigues), <ludmillarodr178@gmail.com>
 
 ## Como Executar
 ESCREVER AQUI
