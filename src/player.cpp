@@ -18,8 +18,8 @@ class Player {
         int turn_rolls = 0;              // quantidade de jogadas no truno
         int score = 0;                   // pontuação geral
         vector <history> tunrs_history;  // historico de pontos e numero de jogadas por tundo
-        int last_dice;                   // numero que saiu na jogada anterior
-        int current_dice;                // numero que saiu na jogada atual
+        //int last_dice;                   // numero que saiu na jogada anterior
+        //int current_dice;                // numero que saiu na jogada atual
     
     public:
         //obtém o nome do jogador
@@ -40,29 +40,40 @@ class Player {
         };
 
         //informa os pontos do turno
-        int get_turn_score() const{
+        int get_turn_score()const{
             return turn_score;
         }
 
         //adiciona o numero de pontos da rodada no total de pontos do jogo e atualiza histórico
-        void update_score (){
-            score += turn_score;
-            tunrs_history.push_back({turn_rolls, turn_score});
-            turn_score = 0; //zera a pontuação da rodada atual
-            turn_rolls = 0;
+        void set_geral_score (int points){
+            score += points;
         };
 
-        //informa a pontuação total do jogador
-        int get_score() const{
+        int get_geral_score()const{
             return score;
+        }
+
+        void update_history (){
+            tunrs_history.push_back({turn_rolls, turn_score});
+            turn_rolls = 0;
+            turn_score = 0;
         };
+
+        int get_history_rolls(int num_turn)const{
+            return tunrs_history[num_turn].dice_rolls;
+        }
+
+        int get_history_turn_score(int num_turn)const{
+            return tunrs_history[num_turn].points;
+        }
+        
 
         //verificar se o jogador tirou dois npuemros consecutivos
-        bool check_dices(int points) {
+        /*bool check_dices(int points) {
             last_dice = current_dice;
             current_dice = points;
             if (last_dice == current_dice) {
                 return true;
             }  
-        };
+        };*/
 };
