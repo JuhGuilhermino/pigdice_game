@@ -6,7 +6,7 @@
  *
  * @author	Júlia Maria A Guilhermino, <juh.guilhermino03@gmail.com>
  * @author  Ludmilla Rodrigues, <ludmillarodr178@gmail.com>
- * @date	September, 2023
+ * @date	September 2023
  * ====================================================================
  * 
  * This file contains the "Dice" class responsible for all random actions in the game:
