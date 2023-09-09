@@ -5,7 +5,7 @@
  * This program implements an interactive Pig Dicegame.
  *
  * @author	Júlia Maria A Guilhermino, <juh.guilhermino03@gmail.com>
- * @author Ludmilla Rodrigues, <>
+ * @author  Ludmilla Rodrigues, <ludmillarodr178@gmail.com>
  * @date	2023
  *
  */

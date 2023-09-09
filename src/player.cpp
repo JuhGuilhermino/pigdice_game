@@ -1,6 +1,16 @@
 /**
- * Classe que represeta um único jogador
-*/
+ * @file main.cpp
+ *
+ * @description
+ * This program implements an interactive Pig Dicegame.
+ *
+ * @author	Júlia Maria A Guilhermino, <juh.guilhermino03@gmail.com>
+ * @author  Ludmilla Rodrigues, <ludmillarodr178@gmail.com>
+ * @date	September, 2023
+ * ====================================================================
+ * 
+ * This file contains the "Player" class that can be used to save player data such as name and points history.
+ */
 
 #include <iostream>
 #include <string>
@@ -13,56 +23,58 @@ struct history{
 
 class Player {
     private:
-        string player_name = "Machine";  // nome do jogador
-        int turn_score = 0;              // pontuação do turno atual
-        int turn_rolls = 0;              // quantidade de jogadas no truno
-        int score = 0;                   // pontuação geral
-        vector <history> tunrs_history;  // historico de pontos e numero de jogadas por tundo
-        //int last_dice;                   // numero que saiu na jogada anterior
-        //int current_dice;                // numero que saiu na jogada atual
+        string player_name = "Machine";  
+        int turn_score = 0;              // current turn score
+        int turn_rolls = 0;              // number of times the roll action was executed on turn
+        int score = 0;                   // total score in the game 
+        vector <history> tunrs_history;  // play history
     
     public:
-        //obtém o nome do jogador
+        //set name of the player
         void set_name(){
-            cout << "Informe o nome do jogador:  ";
+            cout << "Enter the name of the player:  ";
             cin >> player_name;
         }
 
-        //informa o nome do jogador
+        //get name of the player
         string get_name() const{
             return player_name;
         }
 
-        //obtém a pontuação da rodada atual e conta o numero de jogadas
+        //set the score of the current turn and counts the number of rools
         void set_turn_score(int points){
             turn_score += points; 
             turn_rolls += 1;    
         };
 
-        //informa os pontos do turno
+        //get the score of the current turn
         int get_turn_score()const{
             return turn_score;
         }
 
-        //adiciona o numero de pontos da rodada no total de pontos do jogo e atualiza histórico
+        //update the total score
         void set_geral_score (int points){
             score += points;
         };
 
+        //get the total score
         int get_geral_score()const{
             return score;
         }
 
+        //update the play history
         void update_history (){
             tunrs_history.push_back({turn_rolls, turn_score});
             turn_rolls = 0;
             turn_score = 0;
         };
 
+        //informs the number of actions of a specific turn
         int get_history_rolls(int num_turn)const{
             return tunrs_history[num_turn].dice_rolls;
         }
 
+        //informs the score of a specific turn
         int get_history_turn_score(int num_turn)const{
             return tunrs_history[num_turn].points;
         }
