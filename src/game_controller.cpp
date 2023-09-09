@@ -34,7 +34,7 @@ class Game_Controller {
         /// String representation for the dice's faces (Unicode).
         string dice_faces[6] = { "\u2680", "\u2681", "\u2682", "\u2683", "\u2684", "\u2685" };
 
-        bool end_game=false;      // 
+        bool end_game=false;      // controle do loop do jogo
         int game_state;           // controle dos estados
         char game_action;         // controla as ações do jogadores
         int number_of_players;    // número de jogadores
@@ -43,8 +43,9 @@ class Game_Controller {
         int starting_player_index;// indice do jogador que inicia os turnos
         Dice dice;                // cria uma instacia da classe Dice
         int number_of_turns;      // marca o número do turno
-        bool ask_quit_game;       // 
+        bool ask_quit_game;       // confirma se a pessoa quer sair do jogo ou não
         int point;                //número que saiu no dado na jogada atual
+        int num_ia_actions = 0;   // controle das ações da IA
         
 
     public:
@@ -106,14 +107,11 @@ class Game_Controller {
                 cout << "========================================================================================" << endl;
             } else if ( game_state == game_state_e::PLAYING ){
                 if (current_player_index == 0) {
-                    //current player is the machine
-                    int num_actions = 0;
-                    num_actions ++;
-                    if (num_actions == 1) {
-                        //the fist action of the always ever rool
+                    num_ia_actions ++;
+                    if (num_ia_actions <= 3) {
                         game_action = game_actions_e::ROOL;
                     } else {
-                        //draw the action
+                        //current player is the machine
                         game_action = game_actions_e(dice.draw_ia_actions()); 
                     }
                 } else if (current_player_index != 0) {
@@ -189,13 +187,16 @@ class Game_Controller {
             } else if ( game_state == game_state_e::ROLLING ){
                 point = dice.roll_dice(); 
                 if (point == 1) {
-                    //lose points of the turn
+                    players[current_player_index].set_turn_score(0);//lose points of the turn
+                    players[current_player_index].set_geral_score(0); //update score
+                    players[current_player_index].update_history();
                     game_action = game_actions_e::HOLD; //end ther turn fot current player
                     game_state = game_state_e::UPDATING_SCORE; //Go to UPDATE state
                 } else {
                     players[current_player_index].set_turn_score(point); //update score of the player in current turn
                     //check if the player won the game
-                    if (players[current_player_index].get_geral_score() >= 100) {
+                    if (players[current_player_index].get_geral_score() + players[current_player_index].get_turn_score() >= 100) {
+                        players[current_player_index].set_geral_score(players[current_player_index].get_turn_score()); //update geral socore
                         game_over(); //finish the game
                         game_state = game_state_e::ENDING; //Go to END state
                     }else {
@@ -203,15 +204,13 @@ class Game_Controller {
                         game_state = game_state_e::UPDATING_SCORE; //Go to UPDATE state
                     }
                 }
-        
+                
             } else if ( game_state == game_state_e::HOLDING ){
+                players[current_player_index].set_geral_score(players[current_player_index].get_turn_score()); //update score
                 game_state = game_state_e::UPDATING_SCORE; //Go to UPDATE state
         
             } else if ( game_state == game_state_e::UPDATING_SCORE ){
                 if (game_action == game_actions_e::HOLD) {
-                    //update score
-                    players[current_player_index].set_geral_score(point); 
-
                     //update history turns
                     players[current_player_index].update_history();
 
@@ -219,6 +218,7 @@ class Game_Controller {
                     current_player_index ++; 
                     if (current_player_index > number_of_players){
                         current_player_index = 0; //the next player is the machine
+                        num_ia_actions = 0; //restaura o modo de agir da máquina
                     }
                     //upgrade to next turn
                     if (current_player_index == starting_player_index) {
@@ -280,23 +280,25 @@ class Game_Controller {
                 cout << ">>> Requested action: 'HOLD'" << endl;
                 
             } else if ( game_state == game_state_e::UPDATING_SCORE ){
-                if (game_action == game_actions_e::HOLD){
+                if (game_action == game_actions_e::HOLD && point != 1){
                     cout << endl << "|    GERAL SCORE" << endl;
                     for (int i = 0; i <= number_of_players; i++) {
                         cout << "|    " << players[i].get_geral_score() << " -> " << players[i].get_name() << endl;
                     }
                     cout << "-------------------------------------------------------" << endl << endl;
                 }
+                
                 if (game_action == game_actions_e::HOLD && point == 1) {
                     cout << "    Dice value is " << dice_faces[point-1] <<" (" << point <<")" << endl;
                     cout << "    Oh no! You lost your points this turn!" << endl;
                     cout << endl << "|    GERAL SCORE" << endl;
                     for (int i = 0; i <= number_of_players; i++) {
-                        cout << "|    " << players[i].get_geral_score() << " -> " << players[i].get_name() << endl;
+                        cout << "|    " << players[i].get_geral_score()  << " -> " << players[i].get_name() << endl;
                     }
                     cout << "-------------------------------------------------------" << endl << endl;
                 }
-                if (game_action == game_actions_e::ROOL) {
+                
+                if (game_action == game_actions_e::ROOL && point !=1) {
                     cout << "    Dice value is " << dice_faces[point-1] <<" (" << point <<")" << endl;
                     cout << "    The turn total is: " << players[current_player_index].get_geral_score() + players[current_player_index].get_turn_score() << endl;
                     cout << "-------------------------------------------------------" << endl << endl;
@@ -305,22 +307,21 @@ class Game_Controller {
             } else if ( game_state == game_state_e::ENDING ){
                 if (game_action == game_actions_e::ROOL) {
                     cout << "-------------------------------------------------------" << endl << endl;
-                    cout << endl << ">> Contratulations! The winner is " << players[current_player_index].get_name() << "!" << endl << endl;
-
+                    cout << endl << ">> Congratulations! The winner is " << players[current_player_index].get_name() << " with " << players[current_player_index].get_geral_score() << " !" << endl << endl;
                 }
                 if (game_action == game_actions_e::QUIT) {
                     cout << "-------------------------------------------------------" << endl << endl;
                     cout << endl << ">> Goodbye..." << endl << endl;
                 }
 
-                    cout << "            >> HISTORY OF THE GAME ACTIONS<<           " << endl;
+                cout << "            >> HISTORY OF THE GAME ACTIONS<<           " << endl;
                 for (int i = 0; i <= number_of_players; i++) {
                     cout << ">>> " <<  players[i].get_name() << endl;
                     for (int j = 0; j < number_of_turns; j++) {
                         cout << "    " << players[i].get_history_rolls(j) << " dice rolls produced " << players[i].get_history_turn_score(j) << endl;
                     }
                 }
-            
+
                 cout << endl << endl;
             } else if ( game_state == game_state_e::QUITTING ){
                 cout << ">>> Requested action: 'QUIT'" << endl;

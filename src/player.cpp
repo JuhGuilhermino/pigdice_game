@@ -67,13 +67,4 @@ class Player {
             return tunrs_history[num_turn].points;
         }
         
-
-        //verificar se o jogador tirou dois npuemros consecutivos
-        /*bool check_dices(int points) {
-            last_dice = current_dice;
-            current_dice = points;
-            if (last_dice == current_dice) {
-                return true;
-            }  
-        };*/
 };
