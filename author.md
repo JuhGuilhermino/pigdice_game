@@ -5,8 +5,8 @@ Esse projeto é uma versão do jogo Pig Dice para um trabalho da disciplina "Pro
 **Autoras:** [Júlia Maria A. Guilhermino](https://github.com/JuhGuilhermino) e [Ludmilla Rodrigues](https://github.com/Ludrodrigues).
 
 ## Como Executar
-Para compilar o programa utilize o comando <make> e em seguida o parâmentro <./pig_dice> no terminal.
-Ao compilar o make uma vez todos os arquivos são inicializados. Para suspender essa ação digite <make clean>.
+Para compilar o programa utilize o comando `make` e em seguida o parâmentro `./pig_dice>` no terminal.
+Ao compilar o make uma vez todos os arquivos são inicializados. Para suspender essa ação digite `make clean`.
 
 ## Desafio Encontrado: Arquiteura Game Loop
 O principal desafio nesse projeto foi implementar a arquitura Game Loop. Antes de começar a programação, sentimos a necessidade de discutir como trabalhar com os difentes estados para que as ações ocorrecem na ordem correta. 
